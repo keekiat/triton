@@ -113,7 +113,11 @@ class CMakeBuild(build_ext):
             self.build_extension(ext)
 
     def build_extension(self, ext):
-        triton_cache_path = os.path.join(os.environ["HOME"], ".triton")
+        user_home = os.getenv("HOME") or os.getenv("USERPROFILE") or \
+            os.getenv("HOMEPATH") or None
+        if not user_home:
+            raise RuntimeError("Could not find user home directory")
+        triton_cache_path = os.path.join(user_home, ".triton")
         thirdparty_cmake_args = get_thirdparty_packages(triton_cache_path)
         extdir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.path)))
         # create build directories
